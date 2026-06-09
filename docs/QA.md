@@ -25,8 +25,10 @@ Use this checklist before merging implementation PRs.
 - Existing hentenummer is never overwritten.
 - Hentenummer is unique.
 - QR token is secure random.
+- QR URL includes only pickup number and QR token.
 - QR does not expose private data.
 - QR does not bypass staff login.
+- QR code rendering does not call an external API.
 
 ## Pickup Detection Smoke Test
 
@@ -51,10 +53,15 @@ Use this once WooCommerce is available locally:
 - Open an eligible pickup order in WooCommerce admin.
 - Confirm the `Klikk og hent` panel appears on the order screen.
 - Confirm the panel shows hentenummer, internal pickup status, QR token status, payment classification, timestamps, internal note, and audit log.
+- Confirm the panel shows a QR preview when `Vis QR-kode i WooCommerce ordrevisning` is enabled and pickup number/token exist.
+- Scan or inspect the QR code and confirm the URL format is `{site_url}/{terminal_slug}?pickup={pickup_number}&token={qr_token}`.
+- Confirm the QR URL contains no customer name, email, phone, address, order total, or item data.
+- Disable `Vis QR-kode i WooCommerce ordrevisning` and confirm the QR preview is hidden while the QR token status remains visible.
 - Confirm the full QR token is hidden when debug logging is disabled.
 - Enable debug logging and confirm the full QR token is visible only in the admin panel.
 - Use `Generer manglende hentenummer` on an eligible order missing hentedata and confirm metadata is saved through WooCommerce CRUD.
 - Use `Regenerer QR-token` and confirm `_lp_cc_qr_token` changes and audit log records `qr_token_regenerated`.
+- Force an overly long terminal URL or renderer exception in a development environment and confirm the admin panel shows a short fallback message with hentenummer, not a fatal error.
 - Use `Marker som klikk og hent` on an eligible unmarked pickup order and confirm `_lp_cc_is_pickup_order = yes`.
 - Set `_lp_cc_pickup_status = problem`, reload the order, use `Fjern problemstatus`, and confirm status returns to `new`.
 - Confirm each manual action requires a valid nonce and a user with WooCommerce order-management capability.

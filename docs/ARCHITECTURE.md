@@ -65,7 +65,9 @@ Generates unique hentenummer values, respects prefix/next number/minimum length,
 
 ### `class-qr-code.php`
 
-Generates secure QR tokens and local QR image/markup. No external QR code API.
+Generates secure QR tokens, builds terminal QR URLs, and renders local SVG QR markup. No external QR code API.
+
+Current implementation uses a small dependency-free renderer behind the `QR_Code` service. This keeps the first plugin package lightweight while preserving a single class boundary that can later be swapped for a responsibly vendored PHP QR library if packing slip/PDF rendering needs a broader feature set.
 
 ### `class-payment-helper.php`
 
@@ -114,9 +116,10 @@ Registers/enqueues terminal and admin assets only where needed.
 3. Pickup number helper generates hentenummer if missing.
 4. QR helper generates QR token if missing.
 5. Metadata is stored through WooCommerce CRUD APIs.
-6. Staff terminal reads minimal order lists through REST API.
-7. Staff actions update internal pickup state, mapped WooCommerce status when configured, timestamps, and audit log.
-8. Packing slip integration outputs pickup block using order metadata.
+6. Admin order UI asks the QR helper for `{site_url}/{terminal_slug}?pickup={pickup_number}&token={qr_token}` and renders a local SVG preview when enabled.
+7. Staff terminal reads minimal order lists through REST API.
+8. Staff actions update internal pickup state, mapped WooCommerce status when configured, timestamps, and audit log.
+9. Packing slip integration outputs pickup block using order metadata.
 
 ## Architecture Rules
 

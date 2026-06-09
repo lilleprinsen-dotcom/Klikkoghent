@@ -181,6 +181,7 @@
 }
 
 .lp-cc-order-note,
+.lp-cc-qr-preview,
 .lp-cc-audit-log {
 	border-top: 1px solid #dcdcde;
 	margin-top: 14px;
@@ -188,14 +189,38 @@
 }
 
 .lp-cc-order-note h4,
+.lp-cc-qr-preview h4,
 .lp-cc-audit-log h4 {
 	margin: 0 0 8px;
 }
 
 .lp-cc-order-note p,
+.lp-cc-qr-preview p,
 .lp-cc-muted {
 	color: #646970;
 	margin: 0;
+}
+
+.lp-cc-qr-preview {
+	text-align: center;
+}
+
+.lp-cc-qr-svg {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	box-sizing: border-box;
+	display: block;
+	height: auto;
+	margin: 0 auto 8px;
+	max-width: 180px;
+	padding: 8px;
+	width: 100%;
+}
+
+.lp-cc-qr-preview a {
+	display: inline-block;
+	margin-top: 8px;
 }
 
 .lp-cc-order-actions {

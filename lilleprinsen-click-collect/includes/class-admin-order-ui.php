@@ -31,12 +31,21 @@ final class Admin_Order_UI {
 	private Order_Helper $order_helper;
 
 	/**
+	 * QR code helper.
+	 *
+	 * @var QR_Code
+	 */
+	private QR_Code $qr_code;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Order_Helper $order_helper Order helper.
+	 * @param QR_Code      $qr_code QR code helper.
 	 */
-	public function __construct( Order_Helper $order_helper ) {
+	public function __construct( Order_Helper $order_helper, QR_Code $qr_code ) {
 		$this->order_helper = $order_helper;
+		$this->qr_code      = $qr_code;
 	}
 
 	/**
@@ -111,6 +120,8 @@ final class Admin_Order_UI {
 				<?php $this->render_fact( __( 'Hentet', 'lilleprinsen-click-collect' ), $this->format_meta_datetime( $order, Order_Helper::META_COLLECTED_AT ) ); ?>
 			</dl>
 
+			<?php $this->render_qr_preview( $order, $pickup_number, $qr_token ); ?>
+
 			<div class="lp-cc-order-note">
 				<h4><?php echo esc_html__( 'Intern note', 'lilleprinsen-click-collect' ); ?></h4>
 				<p><?php echo esc_html( $this->get_internal_note( $order ) ); ?></p>
@@ -179,11 +190,11 @@ final class Admin_Order_UI {
 		}
 
 		$messages = array(
-			'generated'       => __( 'Klikk og hent-data ble generert.', 'lilleprinsen-click-collect' ),
-			'qr_regenerated'  => __( 'QR-token ble regenerert.', 'lilleprinsen-click-collect' ),
-			'marked_pickup'   => __( 'Ordren ble markert som klikk og hent.', 'lilleprinsen-click-collect' ),
-			'problem_cleared' => __( 'Problemstatus ble fjernet.', 'lilleprinsen-click-collect' ),
-			'updated'         => __( 'Klikk og hent-data ble oppdatert.', 'lilleprinsen-click-collect' ),
+			'generated'        => __( 'Klikk og hent-data ble generert.', 'lilleprinsen-click-collect' ),
+			'qr_regenerated'   => __( 'QR-token ble regenerert.', 'lilleprinsen-click-collect' ),
+			'marked_pickup'    => __( 'Ordren ble markert som klikk og hent.', 'lilleprinsen-click-collect' ),
+			'problem_cleared'  => __( 'Problemstatus ble fjernet.', 'lilleprinsen-click-collect' ),
+			'updated'          => __( 'Klikk og hent-data ble oppdatert.', 'lilleprinsen-click-collect' ),
 		);
 
 		if ( ! isset( $messages[ $message_key ] ) ) {
@@ -238,8 +249,8 @@ final class Admin_Order_UI {
 	/**
 	 * Render pickup number in HPOS order list.
 	 *
-	 * @param string       $column Column key.
-	 * @param WC_Order|int $order_or_id Order object or ID.
+	 * @param string        $column Column key.
+	 * @param WC_Order|int  $order_or_id Order object or ID.
 	 */
 	public function render_hpos_order_list_column( string $column, $order_or_id ): void {
 		if ( 'lp_cc_pickup_number' !== $column ) {
@@ -366,6 +377,48 @@ final class Admin_Order_UI {
 		if ( 'problem' === $status ) {
 			$this->render_action_button( $order, 'clear_problem_status', __( 'Fjern problemstatus', 'lilleprinsen-click-collect' ) );
 		}
+	}
+
+	/**
+	 * Render the admin QR preview when enabled.
+	 *
+	 * @param WC_Order $order WooCommerce order.
+	 * @param string   $pickup_number Pickup number.
+	 * @param string   $qr_token QR token.
+	 */
+	private function render_qr_preview( WC_Order $order, string $pickup_number, string $qr_token ): void {
+		if ( ! (bool) Settings::get( 'admin_show_qr' ) || '' === $pickup_number || '' === $qr_token ) {
+			return;
+		}
+
+		$url = $this->qr_code->get_terminal_url( $order );
+
+		?>
+		<div class="lp-cc-qr-preview">
+			<h4><?php echo esc_html__( 'QR-kode', 'lilleprinsen-click-collect' ); ?></h4>
+			<?php
+			try {
+				echo $this->qr_code->render_svg( $url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			} catch ( \Throwable $exception ) {
+				?>
+				<p class="lp-cc-muted">
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %s: pickup number. */
+							__( 'Kunne ikke vise QR-kode nå. Bruk hentenummer %s.', 'lilleprinsen-click-collect' ),
+							$pickup_number
+						)
+					);
+					?>
+				</p>
+				<?php
+			}
+			?>
+			<p><?php echo esc_html__( 'Skanner åpner ordren i butikkterminalen etter innlogging.', 'lilleprinsen-click-collect' ); ?></p>
+			<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html__( 'Åpne terminal-URL', 'lilleprinsen-click-collect' ); ?></a>
+		</div>
+		<?php
 	}
 
 	/**

@@ -60,6 +60,8 @@ Generation behavior:
 - Token must not expose private data.
 - Token must not bypass staff login.
 - The initial token is generated locally with secure random bytes when pickup metadata is created.
+- The WooCommerce admin QR preview is rendered locally as SVG when `admin_show_qr` is enabled.
+- QR rendering failure must fall back to hentenummer plus a short admin-only message.
 - WooCommerce admin only shows token status by default. The full token is shown there only when debug logging is enabled.
 
 ## WooCommerce Admin Order UI
@@ -71,6 +73,7 @@ The panel displays:
 - Hentenummer
 - Internal pickup status
 - QR token status
+- QR code preview when enabled and renderable
 - Payment classification: `Betalt på nett`, `Må betales i butikk`, or `Ukjent`
 - Payment confirmation timestamp
 - Ready timestamp
