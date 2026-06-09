@@ -67,6 +67,13 @@ final class Plugin {
 	private Audit_Log $audit_log;
 
 	/**
+	 * WooCommerce admin order UI.
+	 *
+	 * @var Admin_Order_UI
+	 */
+	private Admin_Order_UI $admin_order_ui;
+
+	/**
 	 * Return the shared plugin instance.
 	 */
 	public static function instance(): self {
@@ -81,11 +88,12 @@ final class Plugin {
 	 * Plugin constructor.
 	 */
 	private function __construct() {
-		$this->settings      = new Settings();
-		$this->assets        = new Assets();
-		$this->audit_log     = new Audit_Log();
-		$this->pickup_number = new Pickup_Number();
-		$this->order_helper  = new Order_Helper( $this->pickup_number, $this->audit_log );
+		$this->settings       = new Settings();
+		$this->assets         = new Assets();
+		$this->audit_log      = new Audit_Log();
+		$this->pickup_number  = new Pickup_Number();
+		$this->order_helper   = new Order_Helper( $this->pickup_number, $this->audit_log );
+		$this->admin_order_ui = new Admin_Order_UI( $this->order_helper );
 	}
 
 	/**
@@ -103,6 +111,7 @@ final class Plugin {
 		$this->settings->register_hooks();
 		$this->assets->register_hooks();
 		$this->order_helper->register_hooks();
+		$this->admin_order_ui->register_hooks();
 	}
 
 	/**

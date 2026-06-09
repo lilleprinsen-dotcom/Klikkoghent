@@ -44,6 +44,25 @@ Use this once WooCommerce is available locally:
 - On an eligible order missing hentedata, run the WooCommerce order action `Generer manglende hentedata` and confirm metadata is created.
 - Re-run order events or save the order again and confirm the existing hentenummer is not overwritten.
 
+## WooCommerce Admin Order UI Smoke Test
+
+Use this once WooCommerce is available locally:
+
+- Open an eligible pickup order in WooCommerce admin.
+- Confirm the `Klikk og hent` panel appears on the order screen.
+- Confirm the panel shows hentenummer, internal pickup status, QR token status, payment classification, timestamps, internal note, and audit log.
+- Confirm the full QR token is hidden when debug logging is disabled.
+- Enable debug logging and confirm the full QR token is visible only in the admin panel.
+- Use `Generer manglende hentenummer` on an eligible order missing hentedata and confirm metadata is saved through WooCommerce CRUD.
+- Use `Regenerer QR-token` and confirm `_lp_cc_qr_token` changes and audit log records `qr_token_regenerated`.
+- Use `Marker som klikk og hent` on an eligible unmarked pickup order and confirm `_lp_cc_is_pickup_order = yes`.
+- Set `_lp_cc_pickup_status = problem`, reload the order, use `Fjern problemstatus`, and confirm status returns to `new`.
+- Confirm each manual action requires a valid nonce and a user with WooCommerce order-management capability.
+- Confirm non-pickup orders without configured pickup shipping do not show the panel.
+- Confirm WooCommerce order lists include a `Hentenummer` column.
+- Search orders by an existing hentenummer and confirm WooCommerce returns matching orders.
+- Dedicated dropdown filtering by pickup state/payment is deferred until a later admin-list milestone to avoid risky custom HPOS queries.
+
 ## Payment
 
 - Payment gateways can be classified as paid online or pay in store.

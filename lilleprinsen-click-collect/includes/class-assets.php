@@ -37,8 +37,30 @@ final class Assets {
 			LP_CC_VERSION
 		);
 
-		if ( 'woocommerce_page_' . Settings::MENU_SLUG === $hook_suffix ) {
+		if ( $this->should_enqueue_admin_styles( $hook_suffix ) ) {
 			wp_enqueue_style( 'lp-cc-admin' );
 		}
+	}
+
+	/**
+	 * Check whether admin CSS should load on the current screen.
+	 *
+	 * @param string $hook_suffix Current admin page hook.
+	 */
+	private function should_enqueue_admin_styles( string $hook_suffix ): bool {
+		if ( 'woocommerce_page_' . Settings::MENU_SLUG === $hook_suffix ) {
+			return true;
+		}
+
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return false;
+		}
+
+		$screen = get_current_screen();
+		if ( ! $screen ) {
+			return false;
+		}
+
+		return 'shop_order' === $screen->post_type || 'woocommerce_page_wc-orders' === $screen->id;
 	}
 }

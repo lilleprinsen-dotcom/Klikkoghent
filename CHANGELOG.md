@@ -8,6 +8,8 @@ The format follows Keep a Changelog principles. This project does not have a rel
 
 ### Added
 
+- WooCommerce admin order panel showing click-and-collect metadata, payment classification, QR token status, internal note, audit history, and nonce-protected repair actions.
+- Hentenummer column on WooCommerce order lists and WooCommerce-managed search support for pickup number metadata.
 - Click-and-collect order detection for configured WooCommerce shipping methods.
 - Sequential, unique hentenummer generation using plugin settings, with secure QR token metadata and an audit log entry.
 - Manual WooCommerce order action for generating missing pickup metadata on eligible orders.
