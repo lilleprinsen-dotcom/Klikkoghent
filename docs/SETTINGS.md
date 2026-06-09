@@ -4,7 +4,7 @@ Settings page location: WooCommerce -> Klikk og hent
 
 The settings page stores one sanitized option: `lp_cc_settings`.
 
-Current scope: settings storage, pickup detection, hentenummer generation, secure QR token generation, and WooCommerce admin order display. Terminal sessions, payment enforcement, and WP Overnight output are later milestones.
+Current scope: settings storage, pickup detection, hentenummer generation, secure QR token generation, WooCommerce admin order display, and WP Overnight packing slip output. Terminal sessions and payment enforcement are later milestones.
 
 All settings must be sanitized on save and escaped on output.
 
@@ -110,7 +110,7 @@ Rules for future implementation:
 
 | Key | Type | Default | Description |
 | --- | --- | --- | --- |
-| `wpo_enabled` | boolean | `false` | Enables future WP Overnight integration. |
+| `wpo_enabled` | boolean | `false` | Enables WP Overnight packing slip integration. |
 | `wpo_show_pickup_number` | boolean | `true` | Show hentenummer on packing slip. |
 | `wpo_show_qr` | boolean | `true` | Show QR code on packing slip. |
 | `wpo_placement` | string | `after_order_data` | Placement: `top`, `after_order_data`, or `before_order_items`. |

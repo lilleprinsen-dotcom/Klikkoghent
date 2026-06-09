@@ -109,7 +109,19 @@ Use this once WooCommerce is available locally:
 ## WP Overnight
 
 - Integration detects plugin safely.
-- Packing slip output appears only when enabled.
+- With WP Overnight inactive, the plugin should load without fatal errors and show no packing slip output.
+- With WP Overnight active, enable `Aktiver WP Overnight-integrasjon`.
+- Create or open a click-and-collect order with `_lp_cc_pickup_number` and `_lp_cc_qr_token`.
+- Generate a WP Overnight packing slip for the order.
+- Confirm the packing slip shows `KLIKK OG HENT`.
+- Confirm hentenummer appears when `Vis hentenummer på pakkelapp` is enabled.
+- Confirm QR appears when `Vis QR-kode på pakkelapp` is enabled.
+- Scan or inspect the QR and confirm it contains only pickup number and QR token.
+- Disable `Vis QR-kode på pakkelapp` and confirm the hentenummer remains visible without QR.
+- Change placement to `top`, `after_order_data`, and `before_order_items`, then confirm the block appears in the expected area.
+- Generate an invoice for the same order and confirm the Click & Collect block does not appear.
+- Generate a packing slip for a non-pickup order and confirm the block does not appear.
+- Temporarily force QR rendering failure in development and confirm hentenummer still appears with fallback text.
 - Packing slip output is compact and print-friendly.
 - Output appears on packing slips by default, not invoices.
 - No WP Overnight plugin files modified.
