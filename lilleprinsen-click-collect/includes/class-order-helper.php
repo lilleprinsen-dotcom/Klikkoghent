@@ -141,7 +141,15 @@ final class Order_Helper {
 	 * @return array<string, string>
 	 */
 	public function add_manual_order_action( array $actions, ?WC_Order $order = null ): array {
-		if ( $order instanceof WC_Order && ! $this->can_generate_manual_metadata( $order ) ) {
+		if ( ! $order instanceof WC_Order ) {
+			global $theorder;
+
+			if ( $theorder instanceof WC_Order ) {
+				$order = $theorder;
+			}
+		}
+
+		if ( ! $order instanceof WC_Order || ! $this->can_generate_manual_metadata( $order ) ) {
 			return $actions;
 		}
 
@@ -321,7 +329,20 @@ final class Order_Helper {
 	private function can_generate_manual_metadata( WC_Order $order ): bool {
 		return (bool) Settings::get( 'enabled' )
 			&& $this->is_configured_pickup_order( $order )
-			&& '' === (string) $order->get_meta( self::META_PICKUP_NUMBER, true );
+			&& ! $this->has_initial_pickup_metadata( $order );
+	}
+
+	/**
+	 * Check whether initial pickup metadata is already present.
+	 *
+	 * @param WC_Order $order WooCommerce order.
+	 */
+	private function has_initial_pickup_metadata( WC_Order $order ): bool {
+		return 'yes' === (string) $order->get_meta( self::META_IS_PICKUP_ORDER, true )
+			&& '' !== (string) $order->get_meta( self::META_PICKUP_NUMBER, true )
+			&& '' !== (string) $order->get_meta( self::META_QR_TOKEN, true )
+			&& '' !== (string) $order->get_meta( self::META_PICKUP_STATUS, true )
+			&& is_array( $order->get_meta( self::META_AUDIT_LOG, true ) );
 	}
 
 	/**
