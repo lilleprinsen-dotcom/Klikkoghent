@@ -79,9 +79,15 @@ Lilleprinsen sells through WooCommerce and has a physical store. Staff need a si
 1. Copy or symlink `lilleprinsen-click-collect/` into `wp-content/plugins/`.
 2. Make sure WooCommerce is installed and active.
 3. In WordPress admin, activate `Lilleprinsen Click & Collect`.
-4. Open WooCommerce -> Klikk og hent to confirm the settings shell loads.
+4. Open WooCommerce -> Klikk og hent to confirm the settings page loads.
 
 If WooCommerce is inactive, the plugin should show an admin notice and avoid loading plugin features.
+
+## Current Implementation Status
+
+The plugin currently includes the bootstrap, WooCommerce dependency guard, HPOS compatibility declaration, module structure, and the WooCommerce -> Klikk og hent settings page.
+
+The settings page stores configuration for general behavior, pickup shipping methods, hentenummer, order status mapping, payment classification, terminal login, and WP Overnight packing slip options. Pickup detection, terminal UI, payment enforcement, QR generation, and WP Overnight output are planned future milestones.
 
 ## Documentation
 
