@@ -74,6 +74,15 @@ Lilleprinsen sells through WooCommerce and has a physical store. Staff need a si
 - Norwegian UI text
 - REST API namespace: `/wp-json/lp-cc/v1/`
 
+## Local Installation
+
+1. Copy or symlink `lilleprinsen-click-collect/` into `wp-content/plugins/`.
+2. Make sure WooCommerce is installed and active.
+3. In WordPress admin, activate `Lilleprinsen Click & Collect`.
+4. Open WooCommerce -> Klikk og hent to confirm the settings shell loads.
+
+If WooCommerce is inactive, the plugin should show an admin notice and avoid loading plugin features.
+
 ## Documentation
 
 - [Roadmap](docs/ROADMAP.md)

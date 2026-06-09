@@ -78,3 +78,15 @@ Use this checklist before merging implementation PRs.
 - Run Codex review if available.
 - Fix P0/P1 issues before merge.
 - Merge only when checks are green or when no checks exist and that is confirmed.
+
+## Skeleton Activation Smoke Test
+
+Use this for the initial plugin skeleton:
+
+- With WooCommerce active, activate `Lilleprinsen Click & Collect` from WordPress admin.
+- Confirm no fatal error occurs during activation.
+- Confirm WooCommerce -> Klikk og hent loads and shows the placeholder settings page.
+- Deactivate the plugin and confirm no fatal error occurs.
+- With WooCommerce inactive, activate the plugin and confirm it shows a WooCommerce-required admin notice while loading no plugin features.
+- Confirm no order data is read or written during activation/deactivation.
+- Confirm no duplicate WooCommerce order statuses are created.
