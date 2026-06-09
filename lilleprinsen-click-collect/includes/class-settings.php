@@ -32,6 +32,22 @@ final class Settings {
 	);
 
 	/**
+	 * Staff profile helper.
+	 *
+	 * @var Staff_Profiles|null
+	 */
+	private ?Staff_Profiles $staff_profiles;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param Staff_Profiles|null $staff_profiles Staff profiles helper.
+	 */
+	public function __construct( ?Staff_Profiles $staff_profiles = null ) {
+		$this->staff_profiles = $staff_profiles;
+	}
+
+	/**
 	 * Register hooks.
 	 */
 	public function register_hooks(): void {
@@ -225,6 +241,8 @@ final class Settings {
 
 				<?php submit_button( __( 'Lagre innstillinger', 'lilleprinsen-click-collect' ) ); ?>
 			</form>
+
+			<?php $this->render_staff_profiles_section(); ?>
 		</div>
 		<?php
 	}
@@ -373,6 +391,145 @@ final class Settings {
 			</div>
 			<?php $this->render_checkbox( 'require_pin_on_switch', __( 'Krev PIN ved bytte av profil', 'lilleprinsen-click-collect' ), (bool) $settings['require_pin_on_switch'] ); ?>
 		</section>
+		<?php
+	}
+
+	/**
+	 * Render staff profile management.
+	 */
+	private function render_staff_profiles_section(): void {
+		if ( ! $this->staff_profiles ) {
+			return;
+		}
+
+		$profiles = $this->staff_profiles->get_profiles();
+		?>
+		<section class="lp-cc-settings-card lp-cc-staff-section">
+			<h2><?php echo esc_html__( 'Ansattprofiler', 'lilleprinsen-click-collect' ); ?></h2>
+			<p><?php echo esc_html__( 'Profiler brukes senere til innlogging i butikkterminalen med 4-sifret PIN. Eksisterende PIN vises aldri.', 'lilleprinsen-click-collect' ); ?></p>
+
+			<div class="lp-cc-staff-grid">
+				<div class="lp-cc-staff-create">
+					<h3><?php echo esc_html__( 'Ny ansattprofil', 'lilleprinsen-click-collect' ); ?></h3>
+					<form method="post" action="<?php echo esc_url( $this->staff_profiles->get_create_action_url() ); ?>">
+						<?php wp_nonce_field( $this->staff_profiles->get_create_action() ); ?>
+						<input type="hidden" name="action" value="<?php echo esc_attr( $this->staff_profiles->get_create_action() ); ?>" />
+						<?php $this->render_staff_profile_fields(); ?>
+						<?php submit_button( __( 'Opprett ansattprofil', 'lilleprinsen-click-collect' ), 'secondary', 'submit', false ); ?>
+					</form>
+				</div>
+
+				<div class="lp-cc-staff-list">
+					<h3><?php echo esc_html__( 'Eksisterende profiler', 'lilleprinsen-click-collect' ); ?></h3>
+					<?php if ( empty( $profiles ) ) : ?>
+						<p class="lp-cc-muted"><?php echo esc_html__( 'Ingen ansattprofiler ennå.', 'lilleprinsen-click-collect' ); ?></p>
+					<?php endif; ?>
+					<?php foreach ( $profiles as $profile ) : ?>
+						<?php $this->render_staff_profile_form( $profile ); ?>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		</section>
+		<?php
+	}
+
+	/**
+	 * Render one existing staff profile form.
+	 *
+	 * @param array<string, mixed> $profile Staff profile.
+	 */
+	private function render_staff_profile_form( array $profile ): void {
+		?>
+		<form class="lp-cc-staff-profile" method="post" action="<?php echo esc_url( $this->staff_profiles ? $this->staff_profiles->get_update_action_url() : '' ); ?>">
+			<?php if ( $this->staff_profiles ) : ?>
+				<?php wp_nonce_field( $this->staff_profiles->get_update_action() ); ?>
+				<input type="hidden" name="action" value="<?php echo esc_attr( $this->staff_profiles->get_update_action() ); ?>" />
+			<?php endif; ?>
+			<input type="hidden" name="profile_id" value="<?php echo esc_attr( (string) $profile['id'] ); ?>" />
+			<div class="lp-cc-staff-header">
+				<span class="lp-cc-staff-avatar" style="background: <?php echo esc_attr( (string) $profile['color'] ); ?>;">
+					<?php echo esc_html( '' !== (string) $profile['initials'] ? (string) $profile['initials'] : substr( (string) $profile['name'], 0, 2 ) ); ?>
+				</span>
+				<div>
+					<strong><?php echo esc_html( (string) $profile['name'] ); ?></strong>
+					<small>
+						<?php
+						echo esc_html(
+							sprintf(
+								/* translators: %s: profile ID. */
+								__( 'ID: %s', 'lilleprinsen-click-collect' ),
+								(string) $profile['id']
+							)
+						);
+						?>
+					</small>
+				</div>
+			</div>
+			<?php $this->render_staff_profile_fields( $profile ); ?>
+			<div class="lp-cc-staff-meta">
+				<span><?php echo esc_html( sprintf( __( 'Opprettet: %s', 'lilleprinsen-click-collect' ), (string) $profile['created_at'] ) ); ?></span>
+				<span><?php echo esc_html( sprintf( __( 'Oppdatert: %s', 'lilleprinsen-click-collect' ), (string) $profile['updated_at'] ) ); ?></span>
+			</div>
+			<?php submit_button( __( 'Lagre profil', 'lilleprinsen-click-collect' ), 'secondary', 'submit', false ); ?>
+		</form>
+		<?php
+	}
+
+	/**
+	 * Render staff profile fields.
+	 *
+	 * @param array<string, mixed>|null $profile Optional profile.
+	 */
+	private function render_staff_profile_fields( ?array $profile = null ): void {
+		$name     = $profile['name'] ?? '';
+		$role     = $profile['role'] ?? 'staff';
+		$active   = null === $profile ? true : ! empty( $profile['active'] );
+		$initials = $profile['initials'] ?? '';
+		$color    = $profile['color'] ?? '#6b7280';
+		?>
+		<label class="lp-cc-field">
+			<span><?php echo esc_html__( 'Navn', 'lilleprinsen-click-collect' ); ?></span>
+			<input type="text" name="name" value="<?php echo esc_attr( (string) $name ); ?>" required />
+		</label>
+		<div class="lp-cc-field-row">
+			<label class="lp-cc-field">
+				<span><?php echo esc_html__( 'Rolle', 'lilleprinsen-click-collect' ); ?></span>
+				<select name="role">
+					<option value="staff" <?php selected( $role, 'staff' ); ?>><?php echo esc_html__( 'Ansatt', 'lilleprinsen-click-collect' ); ?></option>
+					<option value="manager" <?php selected( $role, 'manager' ); ?>><?php echo esc_html__( 'Leder', 'lilleprinsen-click-collect' ); ?></option>
+				</select>
+			</label>
+			<label class="lp-cc-field">
+				<span><?php echo esc_html__( 'Initialer', 'lilleprinsen-click-collect' ); ?></span>
+				<input type="text" name="initials" value="<?php echo esc_attr( (string) $initials ); ?>" maxlength="3" />
+			</label>
+			<label class="lp-cc-field">
+				<span><?php echo esc_html__( 'Farge', 'lilleprinsen-click-collect' ); ?></span>
+				<input type="color" name="color" value="<?php echo esc_attr( (string) $color ); ?>" />
+			</label>
+		</div>
+		<label class="lp-cc-field">
+			<span><?php echo esc_html( null === $profile ? __( 'PIN', 'lilleprinsen-click-collect' ) : __( 'Ny PIN', 'lilleprinsen-click-collect' ) ); ?></span>
+			<input type="password" name="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" <?php echo null === $profile ? 'required' : ''; ?> />
+			<small><?php echo esc_html__( 'Nøyaktig 4 siffer. Eksisterende PIN vises aldri.', 'lilleprinsen-click-collect' ); ?></small>
+		</label>
+		<?php $this->render_plain_checkbox( 'active', __( 'Aktiv profil', 'lilleprinsen-click-collect' ), $active ); ?>
+		<?php
+	}
+
+	/**
+	 * Render a standalone checkbox not tied to the settings option.
+	 *
+	 * @param string $name Field name.
+	 * @param string $label Field label.
+	 * @param bool   $checked Checked state.
+	 */
+	private function render_plain_checkbox( string $name, string $label, bool $checked ): void {
+		?>
+		<label class="lp-cc-checkbox">
+			<input type="checkbox" name="<?php echo esc_attr( $name ); ?>" value="1" <?php checked( $checked ); ?> />
+			<span><?php echo esc_html( $label ); ?></span>
+		</label>
 		<?php
 	}
 

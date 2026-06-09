@@ -78,16 +78,31 @@ Use this once WooCommerce is available locally:
 - Mark collected is blocked when required confirmation is missing.
 - Audit log records payment confirmation.
 
-## Staff Sessions
+## Staff Profiles And PINs
 
-- Staff can log in with profile + PIN.
-- PINs are hashed.
-- Failed PIN attempts are rate-limited.
-- Session duration works.
-- Inactivity lock works.
-- Logout clears session.
-- Switch profile works.
-- Important actions include active staff profile.
+- Open WooCommerce -> Klikk og hent as a user with `manage_woocommerce`.
+- Confirm the `Ansattprofiler` section is visible.
+- Create a staff profile with name, role, active state, initials/color, and a 4-digit PIN.
+- Confirm the profile is saved with ID, created timestamp, and updated timestamp.
+- Confirm the existing PIN is not displayed after save.
+- Inspect the `lp_cc_staff_profiles` option in development and confirm `pin_hash` is hashed and the plain PIN is not stored.
+- Try creating or updating with a non-4-digit PIN and confirm it is rejected.
+- Edit name, role, active state, initials, and color without entering PIN and confirm the existing PIN hash is preserved.
+- Enter a new 4-digit PIN while editing and confirm the hash changes.
+- Deactivate a profile and confirm it is no longer returned by `Staff_Profiles::get_active_profiles()`.
+- Call `Staff_Profiles::verify_pin()` in development and confirm valid PIN succeeds while invalid PIN fails.
+- Confirm repeated failed PIN attempts are rate-limited and do not reveal whether profile or PIN was wrong.
+- Confirm users without `manage_woocommerce` cannot create or edit profiles.
+
+## Terminal Sessions
+
+- Terminal session UI is not implemented yet.
+- Future terminal login must use active staff profile + PIN.
+- Future session duration uses the configured default of 4 hours.
+- Future inactivity lock uses the configured default of 30 minutes.
+- Future logout clears session.
+- Future switch profile respects the configured PIN requirement.
+- Future important actions include active staff profile.
 
 ## Terminal UI
 

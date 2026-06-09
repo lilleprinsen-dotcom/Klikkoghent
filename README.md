@@ -87,7 +87,7 @@ If WooCommerce is inactive, the plugin should show an admin notice and avoid loa
 
 The plugin currently includes the bootstrap, WooCommerce dependency guard, HPOS compatibility declaration, module structure, and the WooCommerce -> Klikk og hent settings page.
 
-The settings page stores configuration for general behavior, pickup shipping methods, hentenummer, order status mapping, payment classification, terminal login, and WP Overnight packing slip options.
+The settings page stores configuration for general behavior, pickup shipping methods, hentenummer, order status mapping, payment classification, terminal login, staff profiles, and WP Overnight packing slip options.
 
 Click-and-collect order detection is implemented for configured shipping methods. When the plugin is enabled and automatic hentenummer generation is enabled, eligible orders receive HPOS-safe WooCommerce order metadata:
 
@@ -99,6 +99,8 @@ Click-and-collect order detection is implemented for configured shipping methods
 - `_lp_cc_audit_log`
 
 Existing hentenummer values are never overwritten. A WooCommerce admin order action can generate missing pickup metadata manually for an eligible order. Terminal UI and payment enforcement are planned future milestones.
+
+WooCommerce admins can manage staff profiles under `Ansattprofiler`. Profiles have name, role, active state, optional initials/color, timestamps, and a hashed 4-digit PIN. Existing PINs are never shown. PIN verification is available for the later terminal login flow and rate-limits failed attempts.
 
 WooCommerce admin order screens now include a compact Click & Collect panel for pickup orders and eligible pickup orders. The panel shows hentenummer, internal pickup status, QR token status without exposing the full token unless debug logging is enabled, a local QR code preview when enabled, payment classification, pickup timestamps, internal note, and audit history. The QR URL contains only pickup number and token: `{site_url}/{terminal_slug}?pickup={pickup_number}&token={qr_token}`. It also provides nonce-protected manual actions for generating missing hentedata, regenerating QR token, marking an eligible order as pickup, and clearing problem status. Order lists include a hentenummer column, and WooCommerce order search can search the pickup number metadata through WooCommerce's own search field filter.
 

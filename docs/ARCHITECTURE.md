@@ -79,7 +79,7 @@ Maps internal pickup states to existing WooCommerce statuses. Never creates dupl
 
 ### `class-staff-profiles.php`
 
-Creates, edits, deactivates, and validates staff profiles. Hashes PINs and rate-limits failed attempts.
+Creates, edits, deactivates, and validates staff profiles stored in the `lp_cc_staff_profiles` option. Hashes 4-digit PINs with WordPress password hashing, never returns or renders existing PINs, and rate-limits failed PIN verification attempts.
 
 ### `class-terminal-session.php`
 
@@ -117,9 +117,10 @@ Registers/enqueues terminal and admin assets only where needed.
 4. QR helper generates QR token if missing.
 5. Metadata is stored through WooCommerce CRUD APIs.
 6. Admin order UI asks the QR helper for `{site_url}/{terminal_slug}?pickup={pickup_number}&token={qr_token}` and renders a local SVG preview when enabled.
-7. Staff terminal reads minimal order lists through REST API.
-8. Staff actions update internal pickup state, mapped WooCommerce status when configured, timestamps, and audit log.
-9. Packing slip integration outputs pickup block using order metadata.
+7. Admin creates active staff profiles with hashed PINs for future terminal login.
+8. Staff terminal reads minimal order lists through REST API.
+9. Staff actions update internal pickup state, mapped WooCommerce status when configured, timestamps, and audit log.
+10. Packing slip integration outputs pickup block using order metadata.
 
 ## Architecture Rules
 
