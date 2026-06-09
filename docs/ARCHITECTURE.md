@@ -83,11 +83,11 @@ Creates, edits, deactivates, and validates staff profiles stored in the `lp_cc_s
 
 ### `class-terminal-session.php`
 
-Creates and validates terminal sessions, handles logout, profile switch, unlock, expiry, and inactivity lock.
+Creates and validates server-side terminal sessions, handles logout, profile switch, unlock, expiry, and inactivity lock. Raw tokens are returned only to the client at login; the `lp_cc_terminal_sessions` option stores HMAC-SHA256 token hashes with profile ID, created timestamp, expiry, last activity, and lock state.
 
 ### `class-rest-api.php`
 
-Registers `/wp-json/lp-cc/v1/` endpoints and validates terminal sessions/permissions.
+Registers `/wp-json/lp-cc/v1/` endpoints and validates terminal sessions/permissions. Current implementation includes auth endpoints for login, logout, switch profile, unlock, and current session state.
 
 ### `class-terminal-route.php`
 
@@ -118,9 +118,11 @@ Registers/enqueues terminal and admin assets only where needed.
 5. Metadata is stored through WooCommerce CRUD APIs.
 6. Admin order UI asks the QR helper for `{site_url}/{terminal_slug}?pickup={pickup_number}&token={qr_token}` and renders a local SVG preview when enabled.
 7. Admin creates active staff profiles with hashed PINs for future terminal login.
-8. Staff terminal reads minimal order lists through REST API.
-9. Staff actions update internal pickup state, mapped WooCommerce status when configured, timestamps, and audit log.
-10. Packing slip integration outputs pickup block using order metadata.
+8. Staff logs in through `/wp-json/lp-cc/v1/auth/login`; terminal session stores only hashed token server-side and sets an HttpOnly SameSite cookie.
+9. Inactivity checks happen whenever the terminal calls auth/session endpoints. Expired sessions require login, inactive sessions become locked and require PIN.
+10. Staff terminal reads minimal order lists through REST API.
+11. Staff actions update internal pickup state, mapped WooCommerce status when configured, timestamps, and audit log.
+12. Packing slip integration outputs pickup block using order metadata.
 
 ## Architecture Rules
 
