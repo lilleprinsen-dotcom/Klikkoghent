@@ -42,6 +42,16 @@ Do not use direct SQL or direct postmeta functions for WooCommerce order metadat
 - Must only be generated for detected pickup orders.
 - Must be usable by WooCommerce emails, SMS tools, and other integrations.
 
+Generation behavior:
+
+- Pickup orders are detected from the shipping methods selected in WooCommerce -> Klikk og hent.
+- Automatic generation only runs when the plugin is enabled and `auto_pickup_number` is enabled.
+- The next number is read from plugin settings, formatted with the configured prefix and minimum length, checked for uniqueness with WooCommerce order queries, then reserved by incrementing the stored next number.
+- A short-lived WordPress option lock protects the sequential counter during concurrent order events. This lock is non-order data; order data still uses WooCommerce CRUD.
+- If automatic generation is disabled, eligible orders may still be marked as pickup orders, but hentenummer and QR metadata are not generated automatically.
+- Admins can use the WooCommerce order action `Generer manglende hentedata` to create missing pickup metadata for an eligible order.
+- Existing `_lp_cc_pickup_number` values are preserved. Missing supporting metadata can be repaired without replacing the hentenummer.
+
 ## QR Token
 
 - Stored as `_lp_cc_qr_token`.
@@ -49,6 +59,7 @@ Do not use direct SQL or direct postmeta functions for WooCommerce order metadat
 - QR URL format: `{site_url}/{terminal_slug}?pickup={pickup_number}&token={qr_token}`.
 - Token must not expose private data.
 - Token must not bypass staff login.
+- The initial token is generated locally with secure random bytes when pickup metadata is created.
 
 ## Audit Log Entry Shape
 
@@ -65,3 +76,13 @@ Recommended structure:
 ```
 
 Log messages should be human-readable Norwegian.
+
+The initial hentenummer generation audit event uses:
+
+```json
+{
+  "timestamp": "2026-06-09T10:30:00+00:00",
+  "action": "pickup_number_generated",
+  "message": "Hentenummer H1001 ble generert"
+}
+```

@@ -87,7 +87,18 @@ If WooCommerce is inactive, the plugin should show an admin notice and avoid loa
 
 The plugin currently includes the bootstrap, WooCommerce dependency guard, HPOS compatibility declaration, module structure, and the WooCommerce -> Klikk og hent settings page.
 
-The settings page stores configuration for general behavior, pickup shipping methods, hentenummer, order status mapping, payment classification, terminal login, and WP Overnight packing slip options. Pickup detection, terminal UI, payment enforcement, QR generation, and WP Overnight output are planned future milestones.
+The settings page stores configuration for general behavior, pickup shipping methods, hentenummer, order status mapping, payment classification, terminal login, and WP Overnight packing slip options.
+
+Click-and-collect order detection is implemented for configured shipping methods. When the plugin is enabled and automatic hentenummer generation is enabled, eligible orders receive HPOS-safe WooCommerce order metadata:
+
+- `_lp_cc_is_pickup_order`
+- `_lp_cc_pickup_number`
+- `_lp_cc_qr_token`
+- `_lp_cc_pickup_status`
+- initial empty pickup/payment/note fields
+- `_lp_cc_audit_log`
+
+Existing hentenummer values are never overwritten. A WooCommerce admin order action can generate missing pickup metadata manually for an eligible order. Terminal UI, payment enforcement, QR rendering, and WP Overnight output are planned future milestones.
 
 ## Documentation
 
