@@ -14,12 +14,15 @@ The plugin handles staff access to customer and order data. Security must be con
 
 ## Staff Authentication
 
-- Staff log in with staff profile + 4-digit PIN.
-- PINs must be hashed.
+- Staff log in with staff profile + 4-digit PIN when terminal auth is implemented.
+- Staff profiles are managed by WooCommerce admins under WooCommerce -> Klikk og hent.
+- PINs are hashed with WordPress password hashing.
 - PINs must never be stored in plain text.
-- Failed PIN attempts must be rate-limited.
+- Existing PINs must never be shown in admin UI or terminal UI.
+- Failed PIN attempts are rate-limited by profile and remote address.
 - Login errors should be generic.
 - Active staff profile is attached to every important action.
+- Browser storage must not contain sensitive profile data or PIN values. Later terminal sessions may store only an opaque session token.
 
 ## Terminal Sessions
 
@@ -63,6 +66,8 @@ Important actions must be logged with:
 - Norwegian message
 
 Audit log is stored on the order as `_lp_cc_audit_log`.
+
+Terminal login, logout, switch-profile, and lock events should be added to audit logging when terminal sessions are implemented.
 
 ## External Services
 

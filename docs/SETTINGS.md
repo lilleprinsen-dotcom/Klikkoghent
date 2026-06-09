@@ -4,7 +4,7 @@ Settings page location: WooCommerce -> Klikk og hent
 
 The settings page stores one sanitized option: `lp_cc_settings`.
 
-Current scope: settings storage, pickup detection, hentenummer generation, secure QR token generation, WooCommerce admin order display, and WP Overnight packing slip output. Terminal sessions and payment enforcement are later milestones.
+Current scope: settings storage, staff profile/PIN management, pickup detection, hentenummer generation, secure QR token generation, WooCommerce admin order display, and WP Overnight packing slip output. Terminal sessions and payment enforcement are later milestones.
 
 All settings must be sanitized on save and escaped on output.
 
@@ -30,13 +30,12 @@ Settings are managed by `Lilleprinsen\ClickCollect\Settings`.
 | --- | --- | --- | --- |
 | `pickup_shipping_methods` | string array | `[]` | Selected WooCommerce shipping method instance IDs in `method_id:instance_id` format. |
 
-The UI explains in Norwegian that orders using these shipping methods receive hentenummer when business logic is implemented.
+The UI explains in Norwegian that orders using these shipping methods receive hentenummer when automatic generation is active.
 
 Rules:
 
 - Store selected method IDs safely.
-- Do not detect orders yet in this settings-only phase.
-- Only selected shipping methods should count as click and collect once detection is implemented.
+- Only selected shipping methods should count as click and collect.
 
 ## 3. Hentenummer
 
@@ -106,7 +105,35 @@ Rules for future implementation:
 - Terminal must support inactivity lock.
 - Terminal must support `Logg ut` and `Bytt profil`.
 
-## 7. PDF/Plukkliste
+## 7. Ansattprofiler
+
+Staff profiles are stored separately from `lp_cc_settings` in the `lp_cc_staff_profiles` option so PIN hashes are not handled by the general settings form.
+
+Each profile contains:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | string | Stable staff profile ID. |
+| `name` | string | Display name. |
+| `pin_hash` | string | Hashed 4-digit PIN. Never render this value. |
+| `role` | string | `staff` or `manager`. |
+| `active` | boolean | Whether the profile can be used for terminal login. |
+| `initials` | string | Optional display initials. |
+| `color` | hex color | Optional UI color. |
+| `created_at` | datetime string | UTC creation timestamp. |
+| `updated_at` | datetime string | UTC update timestamp. |
+
+Rules:
+
+- Only users with `manage_woocommerce` can manage profiles.
+- PIN must be exactly 4 digits.
+- PIN is hashed with WordPress password hashing.
+- Existing PIN is never shown.
+- Leaving the PIN field blank while editing keeps the existing PIN.
+- Entering a new 4-digit PIN while editing resets the PIN.
+- Unchecking active deactivates the profile without deleting it.
+
+## 8. PDF/Plukkliste
 
 | Key | Type | Default | Description |
 | --- | --- | --- | --- |

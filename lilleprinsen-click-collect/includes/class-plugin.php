@@ -39,6 +39,13 @@ final class Plugin {
 	private Settings $settings;
 
 	/**
+	 * Staff profiles module.
+	 *
+	 * @var Staff_Profiles
+	 */
+	private Staff_Profiles $staff_profiles;
+
+	/**
 	 * Asset module.
 	 *
 	 * @var Assets
@@ -102,11 +109,12 @@ final class Plugin {
 	 * Plugin constructor.
 	 */
 	private function __construct() {
-		$this->settings      = new Settings();
-		$this->assets        = new Assets();
-		$this->audit_log     = new Audit_Log();
-		$this->pickup_number = new Pickup_Number();
-		$this->qr_code       = new QR_Code();
+		$this->staff_profiles = new Staff_Profiles();
+		$this->settings       = new Settings( $this->staff_profiles );
+		$this->assets         = new Assets();
+		$this->audit_log      = new Audit_Log();
+		$this->pickup_number  = new Pickup_Number();
+		$this->qr_code        = new QR_Code();
 		$this->order_helper   = new Order_Helper( $this->pickup_number, $this->audit_log, $this->qr_code );
 		$this->admin_order_ui = new Admin_Order_UI( $this->order_helper, $this->qr_code );
 		$this->wpo_packing_slip_integration = new WPO_Packing_Slip_Integration( $this->order_helper, $this->qr_code );
@@ -125,6 +133,7 @@ final class Plugin {
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 
 		$this->settings->register_hooks();
+		$this->staff_profiles->register_hooks();
 		$this->assets->register_hooks();
 		$this->order_helper->register_hooks();
 		$this->admin_order_ui->register_hooks();
@@ -147,6 +156,13 @@ final class Plugin {
 	 */
 	public function settings(): Settings {
 		return $this->settings;
+	}
+
+	/**
+	 * Get staff profiles module.
+	 */
+	public function staff_profiles(): Staff_Profiles {
+		return $this->staff_profiles;
 	}
 
 	/**
