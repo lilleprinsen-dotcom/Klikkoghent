@@ -28,6 +28,22 @@ Use this checklist before merging implementation PRs.
 - QR does not expose private data.
 - QR does not bypass staff login.
 
+## Pickup Detection Smoke Test
+
+Use this once WooCommerce is available locally:
+
+- Enable the plugin in WooCommerce -> Klikk og hent.
+- Select one click-and-collect shipping method.
+- Confirm automatic hentenummer generation is enabled.
+- Place or create an order with the selected shipping method.
+- Confirm the order metadata contains `_lp_cc_is_pickup_order = yes`, `_lp_cc_pickup_number`, `_lp_cc_qr_token`, `_lp_cc_pickup_status = new`, and `_lp_cc_audit_log`.
+- Confirm the audit log includes `Hentenummer H1001 ble generert` or the matching configured number.
+- Confirm the stored next number has incremented by one.
+- Create an order with a non-selected shipping method and confirm no pickup metadata is created.
+- Disable automatic hentenummer generation, create another eligible order, and confirm no hentenummer or QR token is generated automatically.
+- On an eligible order missing hentedata, run the WooCommerce order action `Generer manglende hentedata` and confirm metadata is created.
+- Re-run order events or save the order again and confirm the existing hentenummer is not overwritten.
+
 ## Payment
 
 - Payment gateways can be classified as paid online or pay in store.

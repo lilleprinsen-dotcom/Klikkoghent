@@ -53,6 +53,13 @@ final class Plugin {
 	private Order_Helper $order_helper;
 
 	/**
+	 * Pickup number generator.
+	 *
+	 * @var Pickup_Number
+	 */
+	private Pickup_Number $pickup_number;
+
+	/**
 	 * Audit log helper.
 	 *
 	 * @var Audit_Log
@@ -74,10 +81,11 @@ final class Plugin {
 	 * Plugin constructor.
 	 */
 	private function __construct() {
-		$this->settings     = new Settings();
-		$this->assets       = new Assets();
-		$this->order_helper = new Order_Helper();
-		$this->audit_log    = new Audit_Log();
+		$this->settings      = new Settings();
+		$this->assets        = new Assets();
+		$this->audit_log     = new Audit_Log();
+		$this->pickup_number = new Pickup_Number();
+		$this->order_helper  = new Order_Helper( $this->pickup_number, $this->audit_log );
 	}
 
 	/**
@@ -94,6 +102,7 @@ final class Plugin {
 
 		$this->settings->register_hooks();
 		$this->assets->register_hooks();
+		$this->order_helper->register_hooks();
 	}
 
 	/**
@@ -119,6 +128,13 @@ final class Plugin {
 	 */
 	public function order_helper(): Order_Helper {
 		return $this->order_helper;
+	}
+
+	/**
+	 * Get pickup number module.
+	 */
+	public function pickup_number(): Pickup_Number {
+		return $this->pickup_number;
 	}
 
 	/**
