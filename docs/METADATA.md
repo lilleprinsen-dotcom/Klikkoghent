@@ -60,6 +60,37 @@ Generation behavior:
 - Token must not expose private data.
 - Token must not bypass staff login.
 - The initial token is generated locally with secure random bytes when pickup metadata is created.
+- WooCommerce admin only shows token status by default. The full token is shown there only when debug logging is enabled.
+
+## WooCommerce Admin Order UI
+
+The admin order panel appears when an order already has pickup metadata or uses a configured pickup shipping method.
+
+The panel displays:
+
+- Hentenummer
+- Internal pickup status
+- QR token status
+- Payment classification: `Betalt på nett`, `Må betales i butikk`, or `Ukjent`
+- Payment confirmation timestamp
+- Ready timestamp
+- Collected timestamp
+- Internal note
+- Audit log
+
+Manual actions use nonce-protected admin URLs, capability checks, and WooCommerce CRUD methods:
+
+- Generate missing pickup number/metadata
+- Regenerate QR token
+- Mark eligible order as pickup order
+- Clear problem status by returning `_lp_cc_pickup_status` to `new`
+
+Related audit action keys:
+
+- `admin_marked_pickup_order`
+- `qr_token_regenerated`
+- `problem_status_cleared`
+- `admin_metadata_repair`
 
 ## Audit Log Entry Shape
 

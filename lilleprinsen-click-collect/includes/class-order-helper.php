@@ -308,6 +308,77 @@ final class Order_Helper {
 	}
 
 	/**
+	 * Check whether the order already has pickup identity metadata.
+	 *
+	 * @param WC_Order $order WooCommerce order.
+	 */
+	public function is_pickup_order( WC_Order $order ): bool {
+		return 'yes' === (string) $order->get_meta( self::META_IS_PICKUP_ORDER, true )
+			|| '' !== (string) $order->get_meta( self::META_PICKUP_NUMBER, true );
+	}
+
+	/**
+	 * Check whether an admin can generate or repair pickup metadata.
+	 *
+	 * @param WC_Order $order WooCommerce order.
+	 */
+	public function can_generate_manual_metadata( WC_Order $order ): bool {
+		return ( $this->is_pickup_order( $order ) || $this->is_configured_pickup_order( $order ) )
+			&& ! $this->has_initial_pickup_metadata( $order );
+	}
+
+	/**
+	 * Mark an order as pickup from an admin action.
+	 *
+	 * @param WC_Order $order WooCommerce order.
+	 */
+	public function mark_manually_as_pickup_order( WC_Order $order ): void {
+		$this->mark_as_pickup_order( $order );
+
+		$this->audit_log->append_order_event(
+			$order,
+			'admin_marked_pickup_order',
+			__( 'Ordren ble markert som klikk og hent av administrator.', 'lilleprinsen-click-collect' )
+		);
+	}
+
+	/**
+	 * Regenerate the QR token for a pickup order.
+	 *
+	 * @param WC_Order $order WooCommerce order.
+	 */
+	public function regenerate_qr_token( WC_Order $order ): void {
+		$order->update_meta_data( self::META_QR_TOKEN, $this->generate_qr_token() );
+		$order->save();
+
+		$this->audit_log->append_order_event(
+			$order,
+			'qr_token_regenerated',
+			__( 'QR-token ble regenerert av administrator.', 'lilleprinsen-click-collect' )
+		);
+	}
+
+	/**
+	 * Clear a problem status by moving the internal pickup state back to new.
+	 *
+	 * @param WC_Order $order WooCommerce order.
+	 */
+	public function clear_problem_status( WC_Order $order ): void {
+		if ( 'problem' !== (string) $order->get_meta( self::META_PICKUP_STATUS, true ) ) {
+			return;
+		}
+
+		$order->update_meta_data( self::META_PICKUP_STATUS, self::PICKUP_STATUS_NEW );
+		$order->save();
+
+		$this->audit_log->append_order_event(
+			$order,
+			'problem_status_cleared',
+			__( 'Problemstatus ble fjernet av administrator.', 'lilleprinsen-click-collect' )
+		);
+	}
+
+	/**
 	 * Mark an order as pickup without overwriting other pickup data.
 	 *
 	 * @param WC_Order $order WooCommerce order.
@@ -322,22 +393,11 @@ final class Order_Helper {
 	}
 
 	/**
-	 * Check whether the manual generation action should be visible.
-	 *
-	 * @param WC_Order $order WooCommerce order.
-	 */
-	private function can_generate_manual_metadata( WC_Order $order ): bool {
-		return (bool) Settings::get( 'enabled' )
-			&& $this->is_configured_pickup_order( $order )
-			&& ! $this->has_initial_pickup_metadata( $order );
-	}
-
-	/**
 	 * Check whether initial pickup metadata is already present.
 	 *
 	 * @param WC_Order $order WooCommerce order.
 	 */
-	private function has_initial_pickup_metadata( WC_Order $order ): bool {
+	public function has_initial_pickup_metadata( WC_Order $order ): bool {
 		return 'yes' === (string) $order->get_meta( self::META_IS_PICKUP_ORDER, true )
 			&& '' !== (string) $order->get_meta( self::META_PICKUP_NUMBER, true )
 			&& '' !== (string) $order->get_meta( self::META_QR_TOKEN, true )
