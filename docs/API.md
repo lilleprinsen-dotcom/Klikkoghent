@@ -1,12 +1,12 @@
 # REST API
 
-Planned namespace:
+Namespace:
 
 ```text
 /wp-json/lp-cc/v1/
 ```
 
-The API is for the staff terminal. Terminal endpoints must require a valid terminal session.
+The API is for the staff terminal. Auth endpoints are implemented for staff profile sessions. Future order endpoints must require a valid, unlocked terminal session.
 
 ## Security Rules
 
@@ -18,6 +18,8 @@ The API is for the staff terminal. Terminal endpoints must require a valid termi
 - Return only necessary customer/order data in detail endpoints.
 - Never expose customer/order data publicly.
 - QR token does not bypass login.
+- Authenticated requests may use the HttpOnly `lp_cc_terminal_session` cookie, `Authorization: Bearer {token}`, or `X-LP-CC-Session: {token}`.
+- Server-side session storage keeps only hashed tokens.
 - Use friendly Norwegian errors where appropriate.
 
 ## Auth Endpoints
@@ -35,23 +37,74 @@ Request:
 }
 ```
 
-Response includes session state and active profile, not sensitive data.
+Response includes session state, active profile, and an opaque `session_token` for non-cookie test clients. The token is also set as an HttpOnly SameSite cookie. Response data never includes PIN hashes.
+
+Session response:
+
+```json
+{
+  "success": true,
+  "message": "Du er logget inn.",
+  "session": {
+    "authenticated": true,
+    "locked": false,
+    "created_at": "2026-06-09T12:00:00+00:00",
+    "expires_at": "2026-06-09T16:00:00+00:00",
+    "last_activity_at": "2026-06-09T12:00:00+00:00",
+    "profile": {
+      "id": "1",
+      "name": "Ola",
+      "role": "staff",
+      "initials": "O",
+      "color": "#6b7280"
+    },
+    "session_token": "opaque-token"
+  }
+}
+```
 
 ### `POST /auth/logout`
 
-Revokes current terminal session.
+Revokes current terminal session and clears the terminal cookie.
 
 ### `POST /auth/switch-profile`
 
-Switches active staff profile. Requires PIN when enabled.
+Switches active staff profile. Requires the target profile PIN when `require_pin_on_switch` is enabled.
+
+Request:
+
+```json
+{
+  "profile_id": "2",
+  "pin": "1234"
+}
+```
 
 ### `POST /auth/unlock`
 
 Unlocks inactive terminal session with PIN.
 
+Request:
+
+```json
+{
+  "pin": "1234"
+}
+```
+
 ### `GET /auth/me`
 
 Returns current terminal session/profile state.
+
+If the configured inactivity duration has passed, this endpoint returns the session with `locked: true`. If the configured session duration has expired, it returns `401` and the staff member must log in again.
+
+Implemented auth event logging:
+
+- `staff_logged_in`
+- `staff_logged_out`
+- `session_expired`
+- `session_locked`
+- `profile_switched`
 
 ## Order Endpoints
 

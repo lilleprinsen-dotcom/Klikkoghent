@@ -34,8 +34,9 @@ define( 'LP_CC_TEXT_DOMAIN', 'lilleprinsen-click-collect' );
 require_once LP_CC_PLUGIN_PATH . 'includes/class-compatibility.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-activator.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-deactivator.php';
-require_once LP_CC_PLUGIN_PATH . 'includes/class-plugin.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-staff-profiles.php';
+require_once LP_CC_PLUGIN_PATH . 'includes/class-terminal-session.php';
+require_once LP_CC_PLUGIN_PATH . 'includes/class-rest-api.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-settings.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-pickup-number.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-qr-code.php';
@@ -44,6 +45,7 @@ require_once LP_CC_PLUGIN_PATH . 'includes/class-audit-log.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-assets.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-admin-order-ui.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-wpo-packing-slip-integration.php';
+require_once LP_CC_PLUGIN_PATH . 'includes/class-plugin.php';
 
 register_activation_hook( __FILE__, array( Activator::class, 'activate' ) );
 register_deactivation_hook( __FILE__, array( Deactivator::class, 'deactivate' ) );

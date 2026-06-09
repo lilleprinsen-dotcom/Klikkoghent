@@ -14,7 +14,7 @@ The plugin handles staff access to customer and order data. Security must be con
 
 ## Staff Authentication
 
-- Staff log in with staff profile + 4-digit PIN when terminal auth is implemented.
+- Staff log in with staff profile + 4-digit PIN through the terminal auth REST endpoints.
 - Staff profiles are managed by WooCommerce admins under WooCommerce -> Klikk og hent.
 - PINs are hashed with WordPress password hashing.
 - PINs must never be stored in plain text.
@@ -22,14 +22,20 @@ The plugin handles staff access to customer and order data. Security must be con
 - Failed PIN attempts are rate-limited by profile and remote address.
 - Login errors should be generic.
 - Active staff profile is attached to every important action.
-- Browser storage must not contain sensitive profile data or PIN values. Later terminal sessions may store only an opaque session token.
+- Browser storage must not contain sensitive profile data or PIN values. Terminal clients may use only the opaque session token when cookie auth is not enough.
 
 ## Terminal Sessions
 
 - Configurable session duration, default 4 hours.
 - Configurable inactivity lock, default 30 minutes.
+- Session records are stored server-side in `lp_cc_terminal_sessions`.
+- Raw session tokens are never stored server-side. The session option stores a deterministic HMAC-SHA256 token hash.
+- Login sets an HttpOnly SameSite cookie named `lp_cc_terminal_session`.
+- REST clients may also send `Authorization: Bearer {token}` or `X-LP-CC-Session: {token}`.
 - Logout must revoke/clear the session.
 - Switch profile must require PIN when enabled.
+- Expired sessions require full login.
+- Inactive sessions become locked and require the current profile PIN to continue.
 - Locked screen must show current staff name but no order data.
 
 ## QR Tokens
@@ -49,7 +55,8 @@ The plugin handles staff access to customer and order data. Security must be con
 
 ## REST API
 
-- All terminal endpoints require valid terminal session.
+- Auth endpoints require profile/PIN or a valid terminal session token, depending on the action.
+- Future order/action endpoints require a valid unlocked terminal session.
 - Admin endpoints require appropriate WordPress capabilities.
 - Validate order is a pickup order before returning terminal data.
 - Return minimal fields.
@@ -65,9 +72,9 @@ Important actions must be logged with:
 - action key
 - Norwegian message
 
-Audit log is stored on the order as `_lp_cc_audit_log`.
+Order audit log is stored on the order as `_lp_cc_audit_log`.
 
-Terminal login, logout, switch-profile, and lock events should be added to audit logging when terminal sessions are implemented.
+Terminal login, logout, switch-profile, expiry, and lock events are logged through the WooCommerce logger with staff profile context because they are not tied to a specific order.
 
 ## External Services
 

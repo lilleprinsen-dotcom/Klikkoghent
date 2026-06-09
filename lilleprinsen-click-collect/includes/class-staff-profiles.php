@@ -66,6 +66,19 @@ final class Staff_Profiles {
 	}
 
 	/**
+	 * Return one profile by ID.
+	 *
+	 * @param string $profile_id Profile ID.
+	 * @return array<string, mixed>|null
+	 */
+	public function get_profile( string $profile_id ): ?array {
+		$profile_id = sanitize_key( $profile_id );
+		$profiles   = $this->get_profiles();
+
+		return $profiles[ $profile_id ] ?? null;
+	}
+
+	/**
 	 * Return active profiles for terminal login.
 	 *
 	 * @return array<string, array<string, mixed>>

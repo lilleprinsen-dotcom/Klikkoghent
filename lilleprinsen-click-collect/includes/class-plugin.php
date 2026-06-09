@@ -74,6 +74,20 @@ final class Plugin {
 	private Audit_Log $audit_log;
 
 	/**
+	 * Terminal session helper.
+	 *
+	 * @var Terminal_Session
+	 */
+	private Terminal_Session $terminal_session;
+
+	/**
+	 * REST API module.
+	 *
+	 * @var REST_API
+	 */
+	private REST_API $rest_api;
+
+	/**
 	 * QR code helper.
 	 *
 	 * @var QR_Code
@@ -113,6 +127,8 @@ final class Plugin {
 		$this->settings       = new Settings( $this->staff_profiles );
 		$this->assets         = new Assets();
 		$this->audit_log      = new Audit_Log();
+		$this->terminal_session = new Terminal_Session( $this->staff_profiles, $this->audit_log );
+		$this->rest_api       = new REST_API( $this->staff_profiles, $this->terminal_session );
 		$this->pickup_number  = new Pickup_Number();
 		$this->qr_code        = new QR_Code();
 		$this->order_helper   = new Order_Helper( $this->pickup_number, $this->audit_log, $this->qr_code );
@@ -134,6 +150,7 @@ final class Plugin {
 
 		$this->settings->register_hooks();
 		$this->staff_profiles->register_hooks();
+		$this->rest_api->register_hooks();
 		$this->assets->register_hooks();
 		$this->order_helper->register_hooks();
 		$this->admin_order_ui->register_hooks();
@@ -184,6 +201,13 @@ final class Plugin {
 	 */
 	public function audit_log(): Audit_Log {
 		return $this->audit_log;
+	}
+
+	/**
+	 * Get terminal session module.
+	 */
+	public function terminal_session(): Terminal_Session {
+		return $this->terminal_session;
 	}
 
 	/**

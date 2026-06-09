@@ -97,12 +97,21 @@ Use this once WooCommerce is available locally:
 ## Terminal Sessions
 
 - Terminal session UI is not implemented yet.
-- Future terminal login must use active staff profile + PIN.
-- Future session duration uses the configured default of 4 hours.
-- Future inactivity lock uses the configured default of 30 minutes.
-- Future logout clears session.
-- Future switch profile respects the configured PIN requirement.
-- Future important actions include active staff profile.
+- Create at least two active staff profiles with known 4-digit PINs.
+- `POST /wp-json/lp-cc/v1/auth/login` with valid `profile_id` and `pin`; confirm success, profile data, `expires_at`, `last_activity_at`, and an opaque `session_token`.
+- Confirm the response does not include `pin_hash` or the plain PIN.
+- Confirm an HttpOnly `lp_cc_terminal_session` cookie is set where headers can be inspected.
+- Inspect `lp_cc_terminal_sessions` in development and confirm only a hashed token key is stored, not the raw session token.
+- Call `GET /wp-json/lp-cc/v1/auth/me` with the cookie, `Authorization: Bearer {token}`, or `X-LP-CC-Session: {token}` and confirm current profile state is returned.
+- Call login/unlock with an invalid PIN repeatedly and confirm failed attempts are rate-limited with generic errors.
+- Set the session `last_activity_at` older than the configured inactivity lock duration, call `auth/me`, and confirm the session returns `locked: true`.
+- Call `POST /wp-json/lp-cc/v1/auth/unlock` with the current profile PIN and confirm `locked: false`.
+- Call `POST /wp-json/lp-cc/v1/auth/switch-profile` with another active profile and PIN when PIN-on-switch is enabled; confirm the profile changes and the session remains unlocked.
+- Disable PIN-on-switch in settings and confirm switch-profile can switch without a PIN while still requiring a valid session token.
+- Set `expires_at` in the past, call `auth/me`, and confirm a `401` response requiring full login.
+- Call `POST /wp-json/lp-cc/v1/auth/logout` and confirm the session is revoked/removed and the cookie is cleared.
+- Confirm terminal session events are logged through WooCommerce logger: login, logout, session expired, inactivity lock, and profile switched.
+- Future order/action endpoints must require a valid unlocked session before returning private order data.
 
 ## Terminal UI
 

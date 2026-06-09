@@ -8,6 +8,7 @@ The format follows Keep a Changelog principles. This project does not have a rel
 
 ### Added
 
+- Secure terminal session backend and REST auth endpoints for staff login, logout, unlock, profile switching, expiry, and inactivity lock.
 - Staff profile and 4-digit PIN management for future terminal login, including hashed PIN storage and failed-attempt rate limiting.
 - WP Overnight packing slip integration for pickup number and inline QR output on packing slips only.
 - Local QR code service for secure token generation, terminal QR URL construction, and dependency-free SVG QR previews in WooCommerce admin.
