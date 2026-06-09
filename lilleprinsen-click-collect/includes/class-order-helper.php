@@ -49,14 +49,23 @@ final class Order_Helper {
 	private Audit_Log $audit_log;
 
 	/**
+	 * QR code helper.
+	 *
+	 * @var QR_Code
+	 */
+	private QR_Code $qr_code;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Pickup_Number $pickup_number Pickup number generator.
 	 * @param Audit_Log     $audit_log Audit log helper.
+	 * @param QR_Code       $qr_code QR code helper.
 	 */
-	public function __construct( Pickup_Number $pickup_number, Audit_Log $audit_log ) {
+	public function __construct( Pickup_Number $pickup_number, Audit_Log $audit_log, QR_Code $qr_code ) {
 		$this->pickup_number = $pickup_number;
 		$this->audit_log     = $audit_log;
+		$this->qr_code       = $qr_code;
 	}
 
 	/**
@@ -271,7 +280,7 @@ final class Order_Helper {
 		}
 
 		$this->mark_as_pickup_order( $order, false );
-		$this->update_meta_if_empty( $order, self::META_QR_TOKEN, $this->generate_qr_token() );
+		$this->update_meta_if_empty( $order, self::META_QR_TOKEN, $this->qr_code->generate_token() );
 		$this->update_meta_if_empty( $order, self::META_PICKUP_STATUS, self::PICKUP_STATUS_NEW );
 		$this->update_meta_if_empty( $order, self::META_READY_AT, '' );
 		$this->update_meta_if_empty( $order, self::META_COLLECTED_AT, '' );
@@ -348,7 +357,7 @@ final class Order_Helper {
 	 * @param WC_Order $order WooCommerce order.
 	 */
 	public function regenerate_qr_token( WC_Order $order ): void {
-		$order->update_meta_data( self::META_QR_TOKEN, $this->generate_qr_token() );
+		$order->update_meta_data( self::META_QR_TOKEN, $this->qr_code->generate_token() );
 		$order->save();
 
 		$this->audit_log->append_order_event(
@@ -420,14 +429,4 @@ final class Order_Helper {
 		}
 	}
 
-	/**
-	 * Generate a secure random token for QR URLs.
-	 */
-	private function generate_qr_token(): string {
-		try {
-			return bin2hex( random_bytes( 32 ) );
-		} catch ( \Exception $exception ) {
-			return wp_generate_password( 64, false, false );
-		}
-	}
 }

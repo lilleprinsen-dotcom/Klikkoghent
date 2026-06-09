@@ -4,7 +4,7 @@ Settings page location: WooCommerce -> Klikk og hent
 
 The settings page stores one sanitized option: `lp_cc_settings`.
 
-Current scope: settings storage and admin UI only. These settings are not yet wired into pickup detection, number generation, terminal sessions, payment enforcement, or WP Overnight output.
+Current scope: settings storage, pickup detection, hentenummer generation, secure QR token generation, and WooCommerce admin order display. Terminal sessions, payment enforcement, and WP Overnight output are later milestones.
 
 All settings must be sanitized on save and escaped on output.
 
@@ -46,14 +46,16 @@ Rules:
 | `pickup_number_prefix` | string | `H` | Prefix for hentenummer. Sanitized to letters, numbers, underscore, and hyphen. |
 | `next_pickup_number` | integer | `1001` | Next number to use. Minimum `1`. |
 | `min_number_length` | integer | `4` | Minimum numeric length. Range `1-12`. |
+| `admin_show_qr` | boolean | `true` | Show a locally rendered QR code preview on the WooCommerce admin order screen. |
 
 The admin UI shows a preview such as `H1001`.
 
-Rules for future implementation:
+Rules:
 
 - Hentenummer must be unique.
 - Hentenummer must never overwrite existing pickup numbers.
 - Hentenummer must be stored as `_lp_cc_pickup_number` on the WooCommerce order.
+- QR previews must be generated locally and must encode only pickup number and QR token.
 
 ## 4. Ordrestatus-Mapping
 

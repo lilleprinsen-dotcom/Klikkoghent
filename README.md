@@ -98,9 +98,9 @@ Click-and-collect order detection is implemented for configured shipping methods
 - initial empty pickup/payment/note fields
 - `_lp_cc_audit_log`
 
-Existing hentenummer values are never overwritten. A WooCommerce admin order action can generate missing pickup metadata manually for an eligible order. Terminal UI, payment enforcement, QR rendering, and WP Overnight output are planned future milestones.
+Existing hentenummer values are never overwritten. A WooCommerce admin order action can generate missing pickup metadata manually for an eligible order. Terminal UI, payment enforcement, and WP Overnight output are planned future milestones.
 
-WooCommerce admin order screens now include a compact Click & Collect panel for pickup orders and eligible pickup orders. The panel shows hentenummer, internal pickup status, QR token status without exposing the full token unless debug logging is enabled, payment classification, pickup timestamps, internal note, and audit history. It also provides nonce-protected manual actions for generating missing hentedata, regenerating QR token, marking an eligible order as pickup, and clearing problem status. Order lists include a hentenummer column, and WooCommerce order search can search the pickup number metadata through WooCommerce's own search field filter.
+WooCommerce admin order screens now include a compact Click & Collect panel for pickup orders and eligible pickup orders. The panel shows hentenummer, internal pickup status, QR token status without exposing the full token unless debug logging is enabled, a local QR code preview when enabled, payment classification, pickup timestamps, internal note, and audit history. The QR URL contains only pickup number and token: `{site_url}/{terminal_slug}?pickup={pickup_number}&token={qr_token}`. It also provides nonce-protected manual actions for generating missing hentedata, regenerating QR token, marking an eligible order as pickup, and clearing problem status. Order lists include a hentenummer column, and WooCommerce order search can search the pickup number metadata through WooCommerce's own search field filter.
 
 ## Documentation
 

@@ -8,6 +8,8 @@ The format follows Keep a Changelog principles. This project does not have a rel
 
 ### Added
 
+- Local QR code service for secure token generation, terminal QR URL construction, and dependency-free SVG QR previews in WooCommerce admin.
+- Setting to show or hide QR code previews on WooCommerce admin order screens.
 - WooCommerce admin order panel showing click-and-collect metadata, payment classification, QR token status, internal note, audit history, and nonce-protected repair actions.
 - Hentenummer column on WooCommerce order lists and WooCommerce-managed search support for pickup number metadata.
 - Click-and-collect order detection for configured WooCommerce shipping methods.

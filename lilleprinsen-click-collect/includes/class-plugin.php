@@ -67,6 +67,13 @@ final class Plugin {
 	private Audit_Log $audit_log;
 
 	/**
+	 * QR code helper.
+	 *
+	 * @var QR_Code
+	 */
+	private QR_Code $qr_code;
+
+	/**
 	 * WooCommerce admin order UI.
 	 *
 	 * @var Admin_Order_UI
@@ -88,12 +95,13 @@ final class Plugin {
 	 * Plugin constructor.
 	 */
 	private function __construct() {
-		$this->settings       = new Settings();
-		$this->assets         = new Assets();
-		$this->audit_log      = new Audit_Log();
-		$this->pickup_number  = new Pickup_Number();
-		$this->order_helper   = new Order_Helper( $this->pickup_number, $this->audit_log );
-		$this->admin_order_ui = new Admin_Order_UI( $this->order_helper );
+		$this->settings      = new Settings();
+		$this->assets        = new Assets();
+		$this->audit_log     = new Audit_Log();
+		$this->pickup_number = new Pickup_Number();
+		$this->qr_code       = new QR_Code();
+		$this->order_helper   = new Order_Helper( $this->pickup_number, $this->audit_log, $this->qr_code );
+		$this->admin_order_ui = new Admin_Order_UI( $this->order_helper, $this->qr_code );
 	}
 
 	/**
@@ -151,5 +159,12 @@ final class Plugin {
 	 */
 	public function audit_log(): Audit_Log {
 		return $this->audit_log;
+	}
+
+	/**
+	 * Get QR code module.
+	 */
+	public function qr_code(): QR_Code {
+		return $this->qr_code;
 	}
 }

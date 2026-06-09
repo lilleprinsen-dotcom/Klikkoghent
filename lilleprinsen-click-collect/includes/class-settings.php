@@ -83,6 +83,7 @@ final class Settings {
 			'pickup_number_prefix'         => 'H',
 			'next_pickup_number'           => 1001,
 			'min_number_length'            => 4,
+			'admin_show_qr'                => true,
 			'status_mapping'               => array(
 				'new'       => '',
 				'picking'   => '',
@@ -167,6 +168,7 @@ final class Settings {
 			'pickup_number_prefix'         => $prefix,
 			'next_pickup_number'           => max( 1, absint( $input['next_pickup_number'] ?? $defaults['next_pickup_number'] ) ),
 			'min_number_length'            => max( 1, min( 12, absint( $input['min_number_length'] ?? $defaults['min_number_length'] ) ) ),
+			'admin_show_qr'                => ! empty( $input['admin_show_qr'] ),
 			'status_mapping'               => $status_mapping,
 			'paid_online_methods'          => $this->sanitize_list( $input['paid_online_methods'] ?? array(), array_keys( $gateway_options ) ),
 			'pay_in_store_methods'         => $this->sanitize_list( $input['pay_in_store_methods'] ?? array(), array_keys( $gateway_options ) ),
@@ -257,7 +259,7 @@ final class Settings {
 		?>
 		<section class="lp-cc-settings-card">
 			<h2><?php echo esc_html__( 'Klikk-og-hent-deteksjon', 'lilleprinsen-click-collect' ); ?></h2>
-			<p><?php echo esc_html__( 'Ordre som bruker valgte fraktmetoder får hentenummer når forretningslogikken aktiveres i en senere milepæl.', 'lilleprinsen-click-collect' ); ?></p>
+			<p><?php echo esc_html__( 'Ordre som bruker valgte fraktmetoder får hentenummer når automatisk generering er aktivert.', 'lilleprinsen-click-collect' ); ?></p>
 			<?php $this->render_checkbox_group( 'pickup_shipping_methods', $shipping_methods, (array) $settings['pickup_shipping_methods'], __( 'Ingen fraktmetoder funnet.', 'lilleprinsen-click-collect' ) ); ?>
 		</section>
 		<?php
@@ -292,6 +294,7 @@ final class Settings {
 				<span><?php echo esc_html__( 'Forhåndsvisning', 'lilleprinsen-click-collect' ); ?></span>
 				<strong><?php echo esc_html( $preview ); ?></strong>
 			</div>
+			<?php $this->render_checkbox( 'admin_show_qr', __( 'Vis QR-kode i WooCommerce ordrevisning', 'lilleprinsen-click-collect' ), (bool) $settings['admin_show_qr'] ); ?>
 		</section>
 		<?php
 	}
@@ -454,8 +457,8 @@ final class Settings {
 	/**
 	 * Sanitize a list against allowed values.
 	 *
-	 * @param mixed              $raw Raw value.
-	 * @param array<int, string> $allowed Allowed values.
+	 * @param mixed                $raw Raw value.
+	 * @param array<int, string>   $allowed Allowed values.
 	 * @return array<int, string>
 	 */
 	private function sanitize_list( $raw, array $allowed ): array {

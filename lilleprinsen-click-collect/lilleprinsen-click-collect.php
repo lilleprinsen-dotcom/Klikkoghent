@@ -37,6 +37,7 @@ require_once LP_CC_PLUGIN_PATH . 'includes/class-deactivator.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-plugin.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-settings.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-pickup-number.php';
+require_once LP_CC_PLUGIN_PATH . 'includes/class-qr-code.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-order-helper.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-audit-log.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-assets.php';
