@@ -40,6 +40,7 @@ require_once LP_CC_PLUGIN_PATH . 'includes/class-pickup-number.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-order-helper.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-audit-log.php';
 require_once LP_CC_PLUGIN_PATH . 'includes/class-assets.php';
+require_once LP_CC_PLUGIN_PATH . 'includes/class-admin-order-ui.php';
 
 register_activation_hook( __FILE__, array( Activator::class, 'activate' ) );
 register_deactivation_hook( __FILE__, array( Deactivator::class, 'deactivate' ) );
