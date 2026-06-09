@@ -81,6 +81,13 @@ final class Plugin {
 	private Admin_Order_UI $admin_order_ui;
 
 	/**
+	 * WP Overnight packing slip integration.
+	 *
+	 * @var WPO_Packing_Slip_Integration
+	 */
+	private WPO_Packing_Slip_Integration $wpo_packing_slip_integration;
+
+	/**
 	 * Return the shared plugin instance.
 	 */
 	public static function instance(): self {
@@ -102,6 +109,7 @@ final class Plugin {
 		$this->qr_code       = new QR_Code();
 		$this->order_helper   = new Order_Helper( $this->pickup_number, $this->audit_log, $this->qr_code );
 		$this->admin_order_ui = new Admin_Order_UI( $this->order_helper, $this->qr_code );
+		$this->wpo_packing_slip_integration = new WPO_Packing_Slip_Integration( $this->order_helper, $this->qr_code );
 	}
 
 	/**
@@ -120,6 +128,7 @@ final class Plugin {
 		$this->assets->register_hooks();
 		$this->order_helper->register_hooks();
 		$this->admin_order_ui->register_hooks();
+		$this->wpo_packing_slip_integration->register_hooks();
 	}
 
 	/**

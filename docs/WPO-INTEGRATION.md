@@ -12,7 +12,7 @@ This plugin must integrate with the existing packing slip system. Do not build a
 - Output on packing slips by default, not invoices.
 - Fallback gracefully if QR cannot render.
 
-## Planned Class
+## Integration Class
 
 `class-wpo-packing-slip-integration.php`
 
@@ -23,6 +23,19 @@ Responsibilities:
 - Use WP Overnight template/action hooks where possible.
 - Read hentenummer and QR token from WooCommerce order metadata using CRUD APIs.
 - Output compact markup for packing slips.
+- Avoid invoices by default.
+
+The current implementation is defensive for WP Overnight 3.4.0 and newer. It detects the integration with `wcpdf_get_document`, `WPO_WCPDF`, `WPO\WC\PDF_Invoices\Main`, or `WPO_WCPDF_VERSION`, then registers only documented template action hooks.
+
+## Hooks Used
+
+| Setting placement | WP Overnight hook | Markup shape |
+| --- | --- | --- |
+| `top` | `wpo_wcpdf_before_document` | Compact block before document content |
+| `after_order_data` | `wpo_wcpdf_after_order_data` | `<tr><td colspan="2">...</td></tr>` because the hook is inside the order data table |
+| `before_order_items` | `wpo_wcpdf_before_order_details` | Compact block before the item table |
+
+No WP Overnight plugin files are modified, and no custom template is required. The documented hooks are sufficient for the current pickup block.
 
 ## Settings
 
@@ -53,9 +66,12 @@ QR URL format:
 
 The QR token identifies the order for the terminal but does not grant access. Staff must still be logged in with a valid terminal session.
 
+QR output is rendered as inline SVG with fixed dimensions and inline styles so the PDF renderer does not depend on admin CSS or external image assets.
+
 ## Fallbacks
 
 - If WP Overnight is inactive, show no packing slip output and avoid fatal errors.
 - If QR rendering fails, still show hentenummer.
 - If order is not a pickup order, show nothing.
 - If hentenummer is missing, show nothing unless an explicit repair/admin action is used.
+- If the document type is not `packing-slip`, show nothing.

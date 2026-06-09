@@ -8,6 +8,7 @@ The format follows Keep a Changelog principles. This project does not have a rel
 
 ### Added
 
+- WP Overnight packing slip integration for pickup number and inline QR output on packing slips only.
 - Local QR code service for secure token generation, terminal QR URL construction, and dependency-free SVG QR previews in WooCommerce admin.
 - Setting to show or hide QR code previews on WooCommerce admin order screens.
 - WooCommerce admin order panel showing click-and-collect metadata, payment classification, QR token status, internal note, audit history, and nonce-protected repair actions.
